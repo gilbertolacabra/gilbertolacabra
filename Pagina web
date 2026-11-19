@@ -1,0 +1,1349 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>GameZone 🎮 - Mini Juegos Web</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#020617;--bg2:#0f172a;--bg3:#1e293b;
+  --border:#334155;--border2:#475569;
+  --text:#f1f5f9;--muted:#94a3b8;--muted2:#64748b;
+  --violet:#7c3aed;--violet2:#8b5cf6;
+  --cyan:#06b6d4;--green:#22c55e;--yellow:#eab308;--red:#ef4444;
+  --gold:#f59e0b;--gold2:#fbbf24;
+  --vip-grad:linear-gradient(135deg,#f59e0b,#d97706,#92400e);
+  --vip-glow:rgba(245,158,11,.35);
+}
+html{scroll-behavior:smooth}
+body{font-family:'Rajdhani',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;
+  background-image:radial-gradient(ellipse at 20% 20%,rgba(139,92,246,.13) 0%,transparent 50%),radial-gradient(ellipse at 80% 80%,rgba(6,182,212,.10) 0%,transparent 50%);}
+button{cursor:pointer;font-family:inherit;border:none;outline:none}
+input,select,textarea{font-family:inherit;outline:none}
+img{display:block;width:100%}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:var(--bg2)}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:99px}
+.hidden{display:none!important}
+.pulse{animation:pulse 2s cubic-bezier(.4,0,.6,1) infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes shimmer{0%{background-position:-200% center}100%{background-position:200% center}}
+@keyframes float{0%,100%{transform:translateY(-50%) rotate(-5deg)}50%{transform:translateY(calc(-50% - 12px)) rotate(5deg)}}
+@keyframes vipPulse{0%,100%{box-shadow:0 0 20px var(--vip-glow)}50%{box-shadow:0 0 40px var(--vip-glow),0 0 60px rgba(245,158,11,.15)}}
+@keyframes slideIn{from{opacity:0;transform:translateX(100%)}to{opacity:1;transform:translateX(0)}}
+
+/* ─── HEADER ─── */
+header{position:sticky;top:0;z-index:40;background:rgba(2,6,23,.9);backdrop-filter:blur(20px);border-bottom:1px solid rgba(51,65,85,.6);}
+.header-inner{max-width:1280px;margin:0 auto;padding:12px 20px;display:flex;align-items:center;gap:12px;}
+.logo{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.logo-icon{width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,#7c3aed,#06b6d4);display:flex;align-items:center;justify-content:center;font-size:20px;box-shadow:0 8px 24px rgba(124,58,237,.35);}
+.logo-text h1{font-size:17px;font-weight:900;line-height:1;font-family:'Orbitron',sans-serif}
+.logo-text p{font-size:11px;color:var(--muted);margin-top:2px}
+@media(max-width:480px){.logo-text{display:none}}
+.search-wrap{position:relative;flex:1;max-width:400px}
+.search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:15px;pointer-events:none;color:var(--muted2)}
+#searchInput{width:100%;background:rgba(30,41,59,.8);border:1px solid var(--border);border-radius:12px;padding:10px 38px 10px 38px;font-size:14px;color:var(--text);transition:border-color .2s,box-shadow .2s;}
+#searchInput::placeholder{color:var(--muted2)}
+#searchInput:focus{border-color:var(--violet2);box-shadow:0 0 0 3px rgba(139,92,246,.2)}
+#clearSearch{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;color:var(--muted);font-size:14px;padding:4px;transition:color .2s}
+#clearSearch:hover{color:var(--text)}
+#availableBtn{flex-shrink:0;padding:9px 14px;border-radius:12px;font-size:13px;font-weight:700;border:1px solid var(--border);background:rgba(30,41,59,.8);color:var(--muted);transition:all .2s;}
+#availableBtn:hover{color:var(--text);border-color:var(--border2)}
+#availableBtn.active{background:var(--violet);border-color:var(--violet2);color:#fff;box-shadow:0 4px 20px rgba(124,58,237,.4)}
+.header-auth{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.btn-login{padding:9px 16px;border-radius:12px;font-size:13px;font-weight:700;border:1px solid var(--border);background:rgba(30,41,59,.8);color:var(--text);transition:all .2s;}
+.btn-login:hover{border-color:var(--violet2);color:var(--violet2)}
+.btn-register{padding:9px 16px;border-radius:12px;font-size:13px;font-weight:700;background:var(--violet);color:#fff;transition:all .2s;}
+.btn-register:hover{background:var(--violet2);box-shadow:0 4px 16px rgba(124,58,237,.4)}
+.profile-btn{display:flex;align-items:center;gap:10px;padding:7px 14px 7px 10px;border-radius:14px;background:rgba(30,41,59,.8);border:1px solid var(--border);color:var(--text);transition:all .2s;position:relative;}
+.profile-btn:hover{border-color:var(--border2)}
+.profile-avatar{width:32px;height:32px;border-radius:10px;background:linear-gradient(135deg,#7c3aed,#06b6d4);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:900;color:#fff;font-family:'Orbitron',sans-serif;}
+.profile-avatar.vip{background:var(--vip-grad);box-shadow:0 0 12px var(--vip-glow);}
+.profile-avatar.admin{background:linear-gradient(135deg,#ef4444,#dc2626);box-shadow:0 0 12px rgba(239,68,68,.4);}
+.profile-name{font-size:13px;font-weight:700}
+.profile-role{font-size:11px;color:var(--muted);line-height:1}
+.profile-role.vip{color:var(--gold2)}
+.profile-role.admin{color:#f87171}
+.profile-chevron{font-size:11px;color:var(--muted2);margin-left:2px}
+.profile-dropdown{position:absolute;top:calc(100% + 8px);right:0;background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:8px;min-width:210px;box-shadow:0 20px 60px rgba(0,0,0,.5);z-index:100;animation:fadeIn .15s ease;}
+.dropdown-user{padding:10px 12px 12px;border-bottom:1px solid var(--border);margin-bottom:6px}
+.dropdown-user-name{font-size:15px;font-weight:800}
+.dropdown-user-email{font-size:12px;color:var(--muted2);margin-top:2px}
+.dropdown-vip-badge{display:inline-flex;align-items:center;gap:5px;margin-top:8px;padding:4px 10px;border-radius:99px;font-size:11px;font-weight:800;letter-spacing:.05em;background:var(--vip-grad);color:#fff;}
+.dropdown-admin-badge{display:inline-flex;align-items:center;gap:5px;margin-top:8px;padding:4px 10px;border-radius:99px;font-size:11px;font-weight:800;letter-spacing:.05em;background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;}
+.dropdown-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:10px;font-size:14px;font-weight:600;color:var(--text);transition:background .15s;width:100%;text-align:left;background:none;}
+.dropdown-item:hover{background:var(--bg3)}
+.dropdown-item.danger{color:#f87171}
+.dropdown-item.danger:hover{background:rgba(239,68,68,.1)}
+.dropdown-item.admin-item{color:#f87171}
+.dropdown-item.admin-item:hover{background:rgba(239,68,68,.1)}
+.dropdown-sep{height:1px;background:var(--border);margin:6px 0}
+
+/* ─── MAIN ─── */
+main{max-width:1280px;margin:0 auto;padding:32px 20px 60px}
+.hero{position:relative;border-radius:24px;overflow:hidden;border:1px solid rgba(51,65,85,.5);margin-bottom:36px;}
+.hero-img{height:220px;width:100%;background:linear-gradient(135deg,#1e1b4b 0%,#0f172a 40%,#042f2e 100%);position:relative;overflow:hidden;}
+.hero-img::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 30% 50%,rgba(124,58,237,.4) 0%,transparent 55%),radial-gradient(circle at 75% 30%,rgba(6,182,212,.3) 0%,transparent 45%);}
+.hero-stars{position:absolute;inset:0;background-image:radial-gradient(1px 1px at 20% 30%,rgba(255,255,255,.6) 0%,transparent 100%),radial-gradient(1px 1px at 50% 10%,rgba(255,255,255,.5) 0%,transparent 100%),radial-gradient(1px 1px at 70% 60%,rgba(255,255,255,.4) 0%,transparent 100%),radial-gradient(1px 1px at 90% 20%,rgba(255,255,255,.5) 0%,transparent 100%),radial-gradient(2px 2px at 10% 80%,rgba(255,255,255,.3) 0%,transparent 100%),radial-gradient(1px 1px at 35% 70%,rgba(255,255,255,.4) 0%,transparent 100%),radial-gradient(2px 2px at 60% 85%,rgba(255,255,255,.3) 0%,transparent 100%),radial-gradient(1px 1px at 85% 45%,rgba(255,255,255,.5) 0%,transparent 100%);}
+.hero-controller{position:absolute;right:40px;top:50%;transform:translateY(-50%);font-size:90px;opacity:.15;animation:float 4s ease-in-out infinite;}
+@media(max-width:600px){.hero-controller{display:none}}
+.hero-overlay{position:absolute;inset:0;background:linear-gradient(to right,rgba(2,6,23,.95) 0%,rgba(2,6,23,.7) 50%,transparent 100%);}
+.hero-content{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;padding:0 36px;}
+.hero-label{font-size:11px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--violet2);margin-bottom:6px}
+.hero-title{font-size:clamp(28px,5vw,46px);font-weight:900;line-height:1.1;font-family:'Orbitron',sans-serif}
+.hero-sub{color:#cbd5e1;font-size:14px;margin-top:8px;max-width:340px}
+.hero-stats{display:flex;gap:20px;margin-top:14px;align-items:center}
+.hero-stat-live{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted)}
+.dot-live{width:8px;height:8px;border-radius:50%;background:var(--green)}
+.vip-banner{border-radius:20px;overflow:hidden;border:1px solid rgba(245,158,11,.3);margin-bottom:28px;background:linear-gradient(135deg,rgba(245,158,11,.08),rgba(217,119,6,.05),rgba(146,64,14,.08));padding:20px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;position:relative;animation:vipPulse 3s ease infinite;}
+.vip-banner::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);}
+.vip-banner-left{display:flex;align-items:center;gap:16px}
+.vip-banner-icon{font-size:36px;filter:drop-shadow(0 0 12px var(--vip-glow))}
+.vip-banner-text h3{font-size:18px;font-weight:900;font-family:'Orbitron',sans-serif;background:linear-gradient(90deg,#fbbf24,#f59e0b,#d97706);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:shimmer 3s linear infinite;}
+.vip-banner-text p{font-size:13px;color:var(--muted);margin-top:3px}
+.vip-features{display:flex;gap:12px;flex-wrap:wrap}
+.vip-feat{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--gold2);font-weight:600;}
+.btn-vip{padding:11px 22px;border-radius:12px;font-size:14px;font-weight:800;background:var(--vip-grad);color:#fff;flex-shrink:0;box-shadow:0 6px 24px var(--vip-glow);transition:opacity .2s,transform .1s;}
+.btn-vip:hover{opacity:.9}
+.btn-vip:active{transform:scale(.97)}
+.pills{display:flex;gap:8px;overflow-x:auto;padding-bottom:8px;margin-bottom:20px;scrollbar-width:none}
+.pills::-webkit-scrollbar{display:none}
+.pill{flex-shrink:0;padding:8px 16px;border-radius:99px;font-size:13px;font-weight:700;border:1px solid var(--border);background:rgba(30,41,59,.7);color:var(--muted);display:flex;align-items:center;gap:6px;transition:all .2s;}
+.pill:hover{color:var(--text);border-color:var(--border2)}
+.pill.active{background:var(--violet);border-color:var(--violet2);color:#fff;transform:scale(1.05);box-shadow:0 4px 18px rgba(124,58,237,.4)}
+.pill-count{font-size:11px;padding:2px 7px;border-radius:99px;background:rgba(255,255,255,.15);color:inherit}
+.pill:not(.active) .pill-count{background:var(--bg3);color:var(--muted2)}
+.results-header{margin-bottom:20px}
+.results-header h3{font-size:17px;font-weight:800}
+.results-header p{font-size:13px;color:var(--muted2);margin-top:2px}
+#gameGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:20px}
+.game-card{background:rgba(15,23,42,.7);border:1px solid rgba(51,65,85,.6);border-radius:18px;overflow:hidden;transition:transform .25s,box-shadow .25s,border-color .25s;position:relative;}
+.game-card.available{cursor:pointer}
+.game-card.available:hover{transform:scale(1.03);box-shadow:0 20px 60px rgba(0,0,0,.5);border-color:rgba(71,85,105,.9)}
+.game-card.unavailable{opacity:.65;cursor:not-allowed}
+.game-card.vip-card{border-color:rgba(245,158,11,.3)}
+.game-card.vip-card.available:hover{border-color:rgba(245,158,11,.6);box-shadow:0 20px 60px rgba(245,158,11,.15)}
+.game-card.vip-locked{cursor:pointer;opacity:.85}
+.card-thumb{position:relative;height:170px;overflow:hidden}
+.card-thumb-bg{width:100%;height:100%;object-fit:cover;transition:transform .5s}
+.game-card.available:hover .card-thumb-bg{transform:scale(1.1)}
+.card-thumb-overlay{position:absolute;inset:0;opacity:.45;transition:opacity .3s}
+.game-card.available:hover .card-thumb-overlay{opacity:.55}
+.card-thumb-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:56px}
+.card-badge{position:absolute;top:10px;left:10px;font-size:11px;font-weight:800;padding:3px 10px;border-radius:99px;color:#fff;letter-spacing:.04em;}
+.card-badge.vip-badge{background:var(--vip-grad);box-shadow:0 2px 12px var(--vip-glow);}
+.card-emoji{position:absolute;bottom:10px;right:10px;font-size:28px;filter:drop-shadow(0 2px 8px rgba(0,0,0,.5))}
+.card-soon{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+.card-soon span{background:rgba(2,6,23,.8);backdrop-filter:blur(6px);color:#94a3b8;font-size:11px;font-weight:800;padding:6px 16px;border-radius:99px;border:1px solid var(--border);letter-spacing:.12em;text-transform:uppercase;}
+.card-lock{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;background:rgba(2,6,23,.7);backdrop-filter:blur(3px);}
+.card-lock span{font-size:32px}
+.card-lock p{font-size:12px;font-weight:700;color:var(--gold2)}
+.card-body{padding:14px 16px 18px}
+.card-title{font-size:17px;font-weight:800}
+.card-desc{font-size:13px;color:var(--muted);margin-top:5px;line-height:1.5;display:-webkit-box;-webkit-lineclamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.card-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:10px}
+.card-tag{font-size:11px;color:var(--muted2);background:rgba(30,41,59,.8);padding:2px 8px;border-radius:99px;border:1px solid rgba(51,65,85,.5)}
+.card-play{display:block;width:100%;margin-top:14px;padding:10px;border-radius:12px;font-size:13px;font-weight:800;color:#fff;transition:opacity .2s,transform .1s;}
+.card-play:hover{opacity:.9}
+.card-play:active{transform:scale(.97)}
+.card-play-vip{background:var(--vip-grad);box-shadow:0 4px 16px var(--vip-glow);}
+#emptyState{display:none;flex-direction:column;align-items:center;justify-content:center;padding:80px 20px;text-align:center}
+#emptyState p.big{font-size:56px;margin-bottom:12px}
+#emptyState h3{font-size:20px;font-weight:800;color:var(--muted)}
+#emptyState p.sub{font-size:13px;color:var(--muted2);margin-top:6px}
+#emptyState button{margin-top:18px;padding:10px 22px;background:var(--bg3);border:1px solid var(--border);color:#cbd5e1;border-radius:12px;font-size:13px;font-weight:700;transition:background .2s}
+#emptyState button:hover{background:var(--border)}
+#quickPlay{margin-top:48px}
+#quickPlay h3{font-size:17px;font-weight:800;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+#quickPlay h3 span{font-size:13px;font-weight:400;color:var(--muted2)}
+.quick-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
+.quick-card{display:flex;align-items:center;gap:16px;padding:20px;border-radius:18px;color:#fff;transition:opacity .2s,transform .1s;position:relative;overflow:hidden;}
+.quick-card:hover{opacity:.92}
+.quick-card:active{transform:scale(.98)}
+.quick-card.vip-quick{border:1px solid rgba(245,158,11,.4)}
+.quick-emoji{font-size:44px}
+.quick-info h4{font-size:20px;font-weight:900;font-family:'Orbitron',sans-serif}
+.quick-info p{font-size:13px;opacity:.7;margin-top:2px}
+.quick-arrow{margin-left:auto;font-size:22px;opacity:.5;transition:opacity .2s}
+.quick-card:hover .quick-arrow{opacity:1}
+.quick-vip-tag{position:absolute;top:10px;right:10px;font-size:10px;font-weight:800;padding:2px 8px;border-radius:99px;background:var(--vip-grad);color:#fff;letter-spacing:.05em;}
+footer{border-top:1px solid rgba(51,65,85,.4);padding:28px 20px;text-align:center}
+footer p{font-size:13px;color:var(--muted2)}
+footer p+p{margin-top:4px;font-size:12px;color:var(--border)}
+
+/* ─── MODALS ─── */
+#modalBackdrop{display:none;position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.82);backdrop-filter:blur(14px);align-items:center;justify-content:center;padding:16px;}
+#modalBackdrop.show{display:flex}
+.modal{position:relative;z-index:10;background:var(--bg2);border:1px solid var(--border);border-radius:24px;width:100%;max-width:580px;max-height:95vh;overflow-y:auto;box-shadow:0 40px 100px rgba(0,0,0,.6);}
+.modal-header{padding:20px 22px;border-radius:22px 22px 0 0;display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.modal-header-left{display:flex;align-items:center;gap:14px}
+.modal-emoji{font-size:40px}
+.modal-title{font-size:24px;font-weight:900;font-family:'Orbitron',sans-serif}
+.modal-cat{font-size:13px;opacity:.7;margin-top:2px}
+.modal-close{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.18);color:#fff;font-size:16px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .2s;}
+.modal-close:hover{background:rgba(255,255,255,.28)}
+.modal-how{background:rgba(0,0,0,.2);border-radius:10px;padding:8px 14px;margin:0 22px 4px;font-size:12px;color:rgba(255,255,255,.75);line-height:1.5;}
+.modal-how b{color:#fff}
+.modal-body{padding:20px 22px}
+
+/* ─── AUTH MODAL ─── */
+.auth-modal{background:var(--bg2);border:1px solid var(--border);border-radius:24px;width:100%;max-width:420px;box-shadow:0 40px 100px rgba(0,0,0,.6);overflow:hidden;position:relative;z-index:10;}
+.auth-header{padding:28px 28px 0;text-align:center;}
+.auth-header .auth-icon{width:64px;height:64px;border-radius:18px;margin:0 auto 14px;background:linear-gradient(135deg,#7c3aed,#06b6d4);display:flex;align-items:center;justify-content:center;font-size:28px;box-shadow:0 8px 24px rgba(124,58,237,.35);}
+.auth-header h2{font-size:22px;font-weight:900;font-family:'Orbitron',sans-serif}
+.auth-header p{font-size:14px;color:var(--muted);margin-top:6px}
+.auth-tabs{display:flex;gap:2px;margin:20px 28px 0;background:var(--bg3);border-radius:12px;padding:4px;}
+.auth-tab{flex:1;padding:9px;border-radius:9px;font-size:13px;font-weight:700;color:var(--muted);background:none;transition:all .2s;}
+.auth-tab.active{background:var(--violet);color:#fff;box-shadow:0 4px 12px rgba(124,58,237,.3)}
+.auth-form{padding:22px 28px 28px}
+.form-group{margin-bottom:16px}
+.form-group label{display:block;font-size:12px;font-weight:700;color:var(--muted);margin-bottom:6px;letter-spacing:.08em;text-transform:uppercase}
+.form-group input,.form-group select{width:100%;background:rgba(30,41,59,.8);border:1px solid var(--border);border-radius:12px;padding:12px 14px;font-size:14px;color:var(--text);transition:border-color .2s,box-shadow .2s;}
+.form-group input::placeholder{color:var(--muted2)}
+.form-group input:focus,.form-group select:focus{border-color:var(--violet2);box-shadow:0 0 0 3px rgba(139,92,246,.2)}
+.form-group select option{background:var(--bg2)}
+.form-error{font-size:12px;color:#f87171;margin-top:6px;display:none}
+.btn-auth{width:100%;padding:13px;border-radius:12px;font-size:15px;font-weight:800;color:#fff;background:linear-gradient(135deg,var(--violet),var(--cyan));box-shadow:0 6px 24px rgba(124,58,237,.3);transition:opacity .2s,transform .1s;margin-top:4px;}
+.btn-auth:hover{opacity:.9}
+.btn-auth:active{transform:scale(.98)}
+.auth-switch{text-align:center;margin-top:14px;font-size:13px;color:var(--muted)}
+.auth-switch button{background:none;color:var(--violet2);font-weight:700;font-size:13px;text-decoration:underline}
+.auth-switch button:hover{color:var(--violet)}
+
+/* ─── VIP MODAL ─── */
+.vip-modal{background:var(--bg2);border:1px solid rgba(245,158,11,.3);border-radius:24px;width:100%;max-width:460px;box-shadow:0 40px 100px rgba(0,0,0,.6),0 0 60px var(--vip-glow);overflow:hidden;position:relative;z-index:10;animation:fadeIn .2s ease;}
+.vip-modal-header{padding:28px 28px 0;text-align:center;background:linear-gradient(180deg,rgba(245,158,11,.08),transparent);}
+.vip-crown{font-size:52px;filter:drop-shadow(0 0 20px var(--vip-glow))}
+.vip-modal-title{font-size:24px;font-weight:900;font-family:'Orbitron',sans-serif;background:linear-gradient(90deg,#fbbf24,#f59e0b,#d97706);background-size:200%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:shimmer 2s linear infinite;margin-top:10px;}
+.vip-modal-sub{font-size:14px;color:var(--muted);margin-top:6px}
+.vip-perks{padding:20px 28px}
+.vip-perk{display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px solid rgba(51,65,85,.4);}
+.vip-perk:last-child{border-bottom:none}
+.vip-perk-icon{font-size:22px;flex-shrink:0;margin-top:2px}
+.vip-perk-text h4{font-size:14px;font-weight:800;color:var(--gold2)}
+.vip-perk-text p{font-size:12px;color:var(--muted);margin-top:2px}
+.vip-pricing{margin:0 28px 20px;background:rgba(245,158,11,.06);border:1px solid rgba(245,158,11,.2);border-radius:16px;padding:16px;text-align:center;}
+.vip-price{font-size:32px;font-weight:900;color:var(--gold2);font-family:'Orbitron',sans-serif}
+.vip-price span{font-size:16px;color:var(--muted);font-family:'Rajdhani',sans-serif}
+.vip-price-note{font-size:12px;color:var(--muted2);margin-top:4px}
+.btn-get-vip{display:block;width:calc(100% - 56px);margin:0 28px 24px;padding:14px;border-radius:14px;font-size:16px;font-weight:900;color:#fff;background:var(--vip-grad);box-shadow:0 8px 28px var(--vip-glow);transition:opacity .2s,transform .1s;text-align:center;}
+.btn-get-vip:hover{opacity:.9}
+.btn-get-vip:active{transform:scale(.98)}
+.vip-note{text-align:center;padding:0 28px 24px;font-size:12px;color:var(--muted2)}
+.vip-active-card{background:linear-gradient(135deg,rgba(245,158,11,.12),rgba(217,119,6,.08));border:1px solid rgba(245,158,11,.3);border-radius:20px;padding:20px 24px;margin-bottom:28px;display:flex;align-items:center;justify-content:space-between;gap:16px;position:relative;overflow:hidden;}
+.vip-active-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);}
+.vip-active-left{display:flex;align-items:center;gap:14px}
+.vip-active-icon{font-size:32px;filter:drop-shadow(0 0 10px var(--vip-glow))}
+.vip-active-text h3{font-size:16px;font-weight:900;font-family:'Orbitron',sans-serif;color:var(--gold2);}
+.vip-active-text p{font-size:13px;color:var(--muted);margin-top:2px}
+.vip-stars{font-size:18px;letter-spacing:2px}
+
+/* ─── ADMIN PANEL ─── */
+#adminBackdrop{display:none;position:fixed;inset:0;z-index:70;background:rgba(0,0,0,.95);backdrop-filter:blur(20px);flex-direction:column;overflow:hidden;}
+#adminBackdrop.show{display:flex}
+.admin-topbar{background:rgba(15,23,42,.95);border-bottom:1px solid rgba(239,68,68,.2);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.admin-topbar-left{display:flex;align-items:center;gap:14px}
+.admin-logo{width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,#ef4444,#dc2626);display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 4px 16px rgba(239,68,68,.4);}
+.admin-topbar h1{font-size:16px;font-weight:900;font-family:'Orbitron',sans-serif;color:#fff}
+.admin-topbar p{font-size:11px;color:#f87171;margin-top:1px}
+.admin-close-btn{padding:8px 16px;border-radius:10px;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);color:#f87171;font-size:13px;font-weight:700;transition:all .2s;}
+.admin-close-btn:hover{background:rgba(239,68,68,.2)}
+.admin-layout{display:flex;flex:1;overflow:hidden}
+.admin-sidebar{width:220px;background:rgba(15,23,42,.8);border-right:1px solid rgba(51,65,85,.4);padding:16px 12px;flex-shrink:0;overflow-y:auto;}
+.admin-nav-item{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:12px;font-size:14px;font-weight:700;color:var(--muted);transition:all .2s;width:100%;text-align:left;background:none;margin-bottom:4px;}
+.admin-nav-item:hover{background:rgba(30,41,59,.8);color:var(--text)}
+.admin-nav-item.active{background:rgba(239,68,68,.12);color:#f87171;border:1px solid rgba(239,68,68,.2);}
+.admin-nav-icon{font-size:18px}
+.admin-nav-label{flex:1}
+.admin-nav-count{font-size:11px;padding:2px 8px;border-radius:99px;background:rgba(239,68,68,.2);color:#f87171}
+.admin-content{flex:1;overflow-y:auto;padding:24px}
+.admin-section{display:none;animation:fadeIn .2s ease}
+.admin-section.active{display:block}
+
+/* ─── ADMIN DASHBOARD ─── */
+.admin-stats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;margin-bottom:28px}
+.admin-stat-card{background:rgba(15,23,42,.8);border:1px solid var(--border);border-radius:16px;padding:20px;position:relative;overflow:hidden;}
+.admin-stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.admin-stat-card.red::before{background:linear-gradient(90deg,#ef4444,#dc2626)}
+.admin-stat-card.gold::before{background:linear-gradient(90deg,#f59e0b,#d97706)}
+.admin-stat-card.green::before{background:linear-gradient(90deg,#22c55e,#16a34a)}
+.admin-stat-card.blue::before{background:linear-gradient(90deg,#3b82f6,#2563eb)}
+.admin-stat-icon{font-size:28px;margin-bottom:8px}
+.admin-stat-value{font-size:32px;font-weight:900;font-family:'Orbitron',sans-serif}
+.admin-stat-card.red .admin-stat-value{color:#f87171}
+.admin-stat-card.gold .admin-stat-value{color:var(--gold2)}
+.admin-stat-card.green .admin-stat-value{color:#4ade80}
+.admin-stat-card.blue .admin-stat-value{color:#60a5fa}
+.admin-stat-label{font-size:12px;color:var(--muted);margin-top:4px;font-weight:600}
+
+/* ─── ADMIN TABLE ─── */
+.admin-section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px}
+.admin-section-header h2{font-size:20px;font-weight:900;font-family:'Orbitron',sans-serif}
+.admin-section-header p{font-size:13px;color:var(--muted2);margin-top:2px}
+.btn-admin-action{padding:9px 18px;border-radius:10px;font-size:13px;font-weight:700;color:#fff;background:linear-gradient(135deg,#ef4444,#dc2626);border:none;transition:opacity .2s;}
+.btn-admin-action:hover{opacity:.85}
+.btn-admin-action.green{background:linear-gradient(135deg,#22c55e,#16a34a)}
+.btn-admin-action.gold{background:var(--vip-grad)}
+.admin-table-wrap{background:rgba(15,23,42,.6);border:1px solid var(--border);border-radius:16px;overflow:hidden}
+.admin-table{width:100%;border-collapse:collapse}
+.admin-table th{padding:12px 16px;text-align:left;font-size:11px;font-weight:800;color:var(--muted2);text-transform:uppercase;letter-spacing:.1em;background:rgba(30,41,59,.5);border-bottom:1px solid var(--border)}
+.admin-table td{padding:13px 16px;font-size:14px;border-bottom:1px solid rgba(51,65,85,.3)}
+.admin-table tr:last-child td{border-bottom:none}
+.admin-table tr:hover td{background:rgba(30,41,59,.3)}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:99px;font-size:11px;font-weight:800}
+.badge.vip{background:rgba(245,158,11,.15);color:var(--gold2);border:1px solid rgba(245,158,11,.3)}
+.badge.free{background:rgba(100,116,139,.15);color:var(--muted);border:1px solid var(--border)}
+.badge.admin{background:rgba(239,68,68,.15);color:#f87171;border:1px solid rgba(239,68,68,.3)}
+.badge.active{background:rgba(34,197,94,.15);color:#4ade80;border:1px solid rgba(34,197,94,.3)}
+.badge.inactive{background:rgba(100,116,139,.15);color:var(--muted);border:1px solid var(--border)}
+.tbl-actions{display:flex;gap:6px}
+.tbl-btn{padding:5px 12px;border-radius:8px;font-size:12px;font-weight:700;transition:all .2s;border:none}
+.tbl-btn.promote{background:rgba(245,158,11,.15);color:var(--gold2);border:1px solid rgba(245,158,11,.3)}
+.tbl-btn.promote:hover{background:rgba(245,158,11,.25)}
+.tbl-btn.demote{background:rgba(100,116,139,.15);color:var(--muted);border:1px solid var(--border)}
+.tbl-btn.demote:hover{background:rgba(100,116,139,.25)}
+.tbl-btn.del{background:rgba(239,68,68,.1);color:#f87171;border:1px solid rgba(239,68,68,.2)}
+.tbl-btn.del:hover{background:rgba(239,68,68,.2)}
+.tbl-btn.toggle-on{background:rgba(34,197,94,.1);color:#4ade80;border:1px solid rgba(34,197,94,.2)}
+.tbl-btn.toggle-on:hover{background:rgba(34,197,94,.2)}
+.tbl-btn.toggle-off{background:rgba(239,68,68,.1);color:#f87171;border:1px solid rgba(239,68,68,.2)}
+.tbl-btn.toggle-off:hover{background:rgba(239,68,68,.2)}
+.tbl-btn.edit{background:rgba(59,130,246,.1);color:#60a5fa;border:1px solid rgba(59,130,246,.2)}
+.tbl-btn.edit:hover{background:rgba(59,130,246,.2)}
+
+/* ─── ADMIN VIP REVENUE ─── */
+.revenue-summary{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px;margin-bottom:24px}
+.rev-card{background:rgba(245,158,11,.06);border:1px solid rgba(245,158,11,.2);border-radius:14px;padding:16px;text-align:center}
+.rev-card .rev-val{font-size:28px;font-weight:900;color:var(--gold2);font-family:'Orbitron',sans-serif}
+.rev-card .rev-label{font-size:12px;color:var(--muted);margin-top:4px}
+
+/* ─── ADMIN GAME FORM ─── */
+.admin-form{background:rgba(15,23,42,.6);border:1px solid var(--border);border-radius:16px;padding:24px;margin-top:20px}
+.admin-form h3{font-size:16px;font-weight:800;margin-bottom:18px}
+.admin-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:600px){.admin-form-grid{grid-template-columns:1fr}}
+.admin-form .form-group label{color:var(--muted2)}
+.admin-form-actions{display:flex;gap:10px;margin-top:20px}
+.btn-save{padding:10px 24px;border-radius:10px;font-size:14px;font-weight:800;color:#fff;background:linear-gradient(135deg,#22c55e,#16a34a);border:none;transition:opacity .2s;}
+.btn-save:hover{opacity:.85}
+.btn-cancel{padding:10px 20px;border-radius:10px;font-size:14px;font-weight:700;color:var(--muted);background:rgba(30,41,59,.8);border:1px solid var(--border);transition:all .2s;}
+.btn-cancel:hover{color:var(--text)}
+.toggle-switch{display:flex;align-items:center;gap:10px;padding:12px 14px;background:rgba(30,41,59,.5);border:1px solid var(--border);border-radius:12px;cursor:pointer}
+.toggle-track{width:40px;height:22px;border-radius:99px;background:var(--bg3);border:1px solid var(--border);position:relative;transition:background .2s;flex-shrink:0}
+.toggle-track.on{background:rgba(34,197,94,.3);border-color:rgba(34,197,94,.5)}
+.toggle-thumb{width:16px;height:16px;border-radius:50%;background:var(--muted2);position:absolute;top:2px;left:2px;transition:all .2s}
+.toggle-track.on .toggle-thumb{left:20px;background:#4ade80}
+.toggle-label{font-size:13px;font-weight:700}
+
+/* ─── SNAKE ─── */
+#snakeWrap{display:flex;flex-direction:column;align-items:center;gap:14px;user-select:none}
+.snake-stats{display:flex;gap:28px;width:100%;max-width:420px;justify-content:space-between;padding:0 4px}
+.snake-stat{text-align:center}
+.snake-stat label{font-size:10px;color:var(--muted2);text-transform:uppercase;letter-spacing:.1em;display:block;margin-bottom:2px}
+.snake-stat span{font-size:30px;font-weight:900;display:block}
+.sstat-score{color:var(--green)}.sstat-best{color:var(--yellow)}.sstat-len{color:var(--cyan)}
+.canvas-wrap{position:relative;border-radius:16px;overflow:hidden;border:2px solid var(--border);box-shadow:0 0 40px rgba(34,197,94,.1)}
+#snakeCanvas{display:block}
+.canvas-overlay{position:absolute;inset:0;background:rgba(15,23,42,.87);backdrop-filter:blur(4px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;}
+.canvas-overlay.hide{display:none}
+.overlay-emoji{font-size:52px}
+.overlay-title{font-size:28px;font-weight:900;font-family:'Orbitron',sans-serif}
+.overlay-sub{font-size:14px;color:var(--muted);margin-top:4px}
+.btn-start{padding:14px 36px;border-radius:14px;font-size:17px;font-weight:900;color:#fff;background:linear-gradient(135deg,#22c55e,#16a34a);box-shadow:0 6px 24px rgba(34,197,94,.35);transition:opacity .2s,transform .1s;}
+.btn-start:hover{opacity:.9}.btn-start:active{transform:scale(.96)}
+.dpad{display:flex;flex-direction:column;align-items:center;gap:4px}
+.dpad-row{display:flex;gap:4px}
+.dpad-btn{width:52px;height:52px;background:rgba(30,41,59,.9);border:1px solid var(--border);border-radius:12px;color:var(--text);font-size:20px;display:flex;align-items:center;justify-content:center;transition:background .15s,transform .1s;-webkit-tap-highlight-color:transparent;}
+.dpad-btn:active{background:var(--border);transform:scale(.93)}
+.snake-actions{display:flex;gap:10px}
+.btn-sm{padding:8px 18px;border-radius:10px;font-size:13px;font-weight:700;color:#fff;background:rgba(30,41,59,.9);border:1px solid var(--border);transition:background .15s;}
+.btn-sm:hover{background:var(--border)}
+
+/* ─── GRADIENTS ─── */
+.g-snake{background:linear-gradient(135deg,#22c55e,#059669)}
+.g-tetris{background:linear-gradient(135deg,#3b82f6,#4338ca)}
+.g-pong{background:linear-gradient(135deg,#f97316,#d97706)}
+.g-memory{background:linear-gradient(135deg,#a855f7,#7c3aed)}
+.g-space{background:linear-gradient(135deg,#06b6d4,#0284c7)}
+.g-flappy{background:linear-gradient(135deg,#eab308,#f97316)}
+.g-vip1{background:linear-gradient(135deg,#f59e0b,#d97706)}
+.g-vip2{background:linear-gradient(135deg,#ec4899,#a855f7)}
+.t-snake{background:linear-gradient(160deg,rgba(34,197,94,.55),rgba(5,150,105,.55))}
+.t-tetris{background:linear-gradient(160deg,rgba(59,130,246,.55),rgba(67,56,202,.55))}
+.t-pong{background:linear-gradient(160deg,rgba(249,115,22,.55),rgba(217,119,6,.55))}
+.t-memory{background:linear-gradient(160deg,rgba(168,85,247,.55),rgba(124,58,237,.55))}
+.t-space{background:linear-gradient(160deg,rgba(6,182,212,.55),rgba(2,132,199,.55))}
+.t-flappy{background:linear-gradient(160deg,rgba(234,179,8,.55),rgba(249,115,22,.55))}
+.t-vip1{background:linear-gradient(160deg,rgba(245,158,11,.55),rgba(217,119,6,.55))}
+.t-vip2{background:linear-gradient(160deg,rgba(236,72,153,.55),rgba(168,85,247,.55))}
+
+/* ─── TOAST ─── */
+#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--bg3);border:1px solid var(--border);border-radius:14px;padding:12px 20px;font-size:14px;font-weight:600;color:var(--text);box-shadow:0 12px 40px rgba(0,0,0,.4);transition:transform .3s cubic-bezier(.34,1.56,.64,1);z-index:999;white-space:nowrap;}
+#toast.show{transform:translateX(-50%) translateY(0)}
+#toast.success{border-color:var(--green);color:var(--green)}
+#toast.vip-toast{border-color:var(--gold);color:var(--gold2)}
+#toast.admin-toast{border-color:#ef4444;color:#f87171}
+</style>
+</head>
+<body>
+
+<!-- ══════════ HEADER ══════════ -->
+<header>
+  <div class="header-inner">
+    <div class="logo">
+      <div class="logo-icon">🎮</div>
+      <div class="logo-text">
+        <h1>GameZone</h1>
+        <p>Mini juegos web</p>
+      </div>
+    </div>
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input id="searchInput" type="text" placeholder="Buscar juegos..." autocomplete="off" />
+      <button id="clearSearch" class="hidden">✕</button>
+    </div>
+    <button id="availableBtn">⚡ Disponibles</button>
+    <div class="header-auth" id="headerAuth">
+      <button class="btn-login" onclick="openAuthModal('login')">Iniciar sesión</button>
+      <button class="btn-register" onclick="openAuthModal('register')">Registrarse</button>
+    </div>
+    <div class="header-auth hidden" id="headerProfile" style="position:relative">
+      <button class="profile-btn" onclick="toggleDropdown()">
+        <div class="profile-avatar" id="profileAvatar">?</div>
+        <div>
+          <div class="profile-name" id="profileName">Usuario</div>
+          <div class="profile-role" id="profileRole">Free</div>
+        </div>
+        <span class="profile-chevron">▾</span>
+      </button>
+      <div class="profile-dropdown hidden" id="profileDropdown">
+        <div class="dropdown-user">
+          <div class="dropdown-user-name" id="dropdownName">Usuario</div>
+          <div class="dropdown-user-email" id="dropdownEmail">email@ejemplo.com</div>
+          <div id="dropdownVipBadge" class="hidden"><span class="dropdown-vip-badge">👑 VIP ACTIVO</span></div>
+          <div id="dropdownAdminBadge" class="hidden"><span class="dropdown-admin-badge">🛡️ ADMINISTRADOR</span></div>
+        </div>
+        <button class="dropdown-item admin-item hidden" id="adminPanelBtn" onclick="openAdminPanel();toggleDropdown()">🛡️ Panel de Administración</button>
+        <button class="dropdown-item" onclick="openVipModal();toggleDropdown()">👑 Membresía VIP</button>
+        <div class="dropdown-sep"></div>
+        <button class="dropdown-item danger" onclick="logout()">🚪 Cerrar sesión</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ══════════ MAIN ══════════ -->
+<main>
+  <section class="hero">
+    <div class="hero-img">
+      <div class="hero-stars"></div>
+      <div class="hero-controller">🎮</div>
+      <div class="hero-overlay"></div>
+    </div>
+    <div class="hero-content">
+      <p class="hero-label">Bienvenido a</p>
+      <h2 class="hero-title">GameZone</h2>
+      <p class="hero-sub">Tu colección de mini juegos clásicos. ¡Juega directo en el navegador, sin descargas!</p>
+      <div class="hero-stats">
+        <div class="hero-stat-live">
+          <div class="dot-live pulse"></div>
+          <span id="availableCount">1 juego disponible</span>
+        </div>
+        <div style="font-size:13px;color:var(--muted2)" id="devCount">5 en desarrollo</div>
+      </div>
+    </div>
+  </section>
+
+  <div id="vipBannerContainer"></div>
+  <div class="pills" id="pillsContainer"></div>
+  <div class="results-header">
+    <h3 id="resultsTitle">Todos los juegos</h3>
+    <p id="resultsCount">6 juegos encontrados</p>
+  </div>
+  <div id="gameGrid"></div>
+  <div id="emptyState">
+    <p class="big">🎮</p>
+    <h3>No se encontraron juegos</h3>
+    <p class="sub">Intenta con otro término de búsqueda o categoría</p>
+    <button onclick="clearFilters()">Limpiar filtros</button>
+  </div>
+  <section id="quickPlay">
+    <h3>⚡ Jugar ahora <span>— Juegos disponibles</span></h3>
+    <div class="quick-grid" id="quickGrid"></div>
+  </section>
+</main>
+
+<footer>
+  <p>🎮 GameZone · Mini juegos clásicos en el navegador</p>
+  <p>Más juegos llegando pronto...</p>
+</footer>
+
+<!-- ══════════ GAME MODAL ══════════ -->
+<div id="modalBackdrop">
+  <div class="modal" id="modalBox">
+    <div class="modal-header" id="modalHeader">
+      <div class="modal-header-left">
+        <span class="modal-emoji" id="modalEmoji"></span>
+        <div>
+          <div class="modal-title" id="modalTitle"></div>
+          <div class="modal-cat" id="modalCat"></div>
+        </div>
+      </div>
+      <button class="modal-close" id="modalClose">✕</button>
+    </div>
+    <div class="modal-how" id="modalHow"></div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<!-- ══════════ AUTH MODAL ══════════ -->
+<div id="authBackdrop" style="display:none;position:fixed;inset:0;z-index:60;background:rgba(0,0,0,.85);backdrop-filter:blur(14px);align-items:center;justify-content:center;padding:16px">
+  <div class="auth-modal">
+    <div class="auth-header">
+      <div class="auth-icon">🎮</div>
+      <h2 id="authTitle">Bienvenido</h2>
+      <p id="authSubtitle">Inicia sesión para guardar tu progreso</p>
+    </div>
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tabLogin" onclick="switchAuthTab('login')">Iniciar sesión</button>
+      <button class="auth-tab" id="tabRegister" onclick="switchAuthTab('register')">Registrarse</button>
+    </div>
+    <div class="auth-form" id="loginForm">
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="loginEmail" placeholder="tu@email.com" />
+      </div>
+      <div class="form-group">
+        <label>Contraseña</label>
+        <input type="password" id="loginPassword" placeholder="••••••••" />
+        <div class="form-error" id="loginError"></div>
+      </div>
+      <button class="btn-auth" onclick="doLogin()">Entrar al GameZone ▶</button>
+      <div class="auth-switch">¿No tienes cuenta? <button onclick="switchAuthTab('register')">Regístrate gratis</button></div>
+      <p style="font-size:11px;color:var(--muted2);text-align:center;margin-top:12px">Admin: admin@gamezone.com / admin123</p>
+    </div>
+    <div class="auth-form hidden" id="registerForm">
+      <div class="form-group">
+        <label>Nombre de usuario</label>
+        <input type="text" id="regUsername" placeholder="GamerPro123" />
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="regEmail" placeholder="tu@email.com" />
+      </div>
+      <div class="form-group">
+        <label>Contraseña</label>
+        <input type="password" id="regPassword" placeholder="Min. 6 caracteres" />
+        <div class="form-error" id="registerError"></div>
+      </div>
+      <button class="btn-auth" onclick="doRegister()">Crear mi cuenta 🎮</button>
+      <div class="auth-switch">¿Ya tienes cuenta? <button onclick="switchAuthTab('login')">Inicia sesión</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ VIP MODAL ══════════ -->
+<div id="vipBackdrop" style="display:none;position:fixed;inset:0;z-index:60;background:rgba(0,0,0,.85);backdrop-filter:blur(14px);align-items:center;justify-content:center;padding:16px">
+  <div class="vip-modal">
+    <button style="position:absolute;top:16px;right:16px;background:rgba(255,255,255,.1);border:none;color:#fff;width:32px;height:32px;border-radius:50%;font-size:14px;cursor:pointer;z-index:1;display:flex;align-items:center;justify-content:center" onclick="closeVipModal()">✕</button>
+    <div class="vip-modal-header" style="padding-top:28px;padding-bottom:16px">
+      <div class="vip-crown">👑</div>
+      <div class="vip-modal-title">Membresía VIP</div>
+      <p class="vip-modal-sub">Accede a todos los juegos y beneficios exclusivos</p>
+    </div>
+    <div class="vip-perks">
+      <div class="vip-perk"><span class="vip-perk-icon">🎮</span><div class="vip-perk-text"><h4>Juegos VIP exclusivos</h4><p>Accede a títulos que no están disponibles para usuarios free</p></div></div>
+      <div class="vip-perk"><span class="vip-perk-icon">⚡</span><div class="vip-perk-text"><h4>Acceso anticipado</h4><p>Juega los nuevos títulos antes que nadie</p></div></div>
+      <div class="vip-perk"><span class="vip-perk-icon">🏆</span><div class="vip-perk-text"><h4>Badge VIP en tu perfil</h4><p>Destácate con la corona dorada en tu perfil</p></div></div>
+      <div class="vip-perk"><span class="vip-perk-icon">🌟</span><div class="vip-perk-text"><h4>Sin anuncios</h4><p>Experiencia de juego limpia y sin interrupciones</p></div></div>
+    </div>
+    <div class="vip-pricing">
+      <div class="vip-price">$4.99 <span>/ mes</span></div>
+      <div class="vip-price-note">Cancela cuando quieras · Sin compromisos</div>
+    </div>
+    <button class="btn-get-vip" onclick="activateVip()">👑 Activar VIP ahora</button>
+    <p class="vip-note">⚠️ Esta es una demo. No se realizan cobros reales.</p>
+  </div>
+</div>
+
+<!-- ══════════ ADMIN PANEL ══════════ -->
+<div id="adminBackdrop">
+  <div class="admin-topbar">
+    <div class="admin-topbar-left">
+      <div class="admin-logo">🛡️</div>
+      <div>
+        <h1>Panel de Administración</h1>
+        <p>GameZone · Control total</p>
+      </div>
+    </div>
+    <button class="admin-close-btn" onclick="closeAdminPanel()">✕ Cerrar panel</button>
+  </div>
+  <div class="admin-layout">
+    <nav class="admin-sidebar">
+      <button class="admin-nav-item active" onclick="switchAdminTab('dashboard')" id="nav-dashboard">
+        <span class="admin-nav-icon">📊</span>
+        <span class="admin-nav-label">Dashboard</span>
+      </button>
+      <button class="admin-nav-item" onclick="switchAdminTab('users')" id="nav-users">
+        <span class="admin-nav-icon">👥</span>
+        <span class="admin-nav-label">Usuarios</span>
+        <span class="admin-nav-count" id="nav-users-count">0</span>
+      </button>
+      <button class="admin-nav-item" onclick="switchAdminTab('vip')" id="nav-vip">
+        <span class="admin-nav-icon">👑</span>
+        <span class="admin-nav-label">Ingresos VIP</span>
+        <span class="admin-nav-count" id="nav-vip-count">0</span>
+      </button>
+      <button class="admin-nav-item" onclick="switchAdminTab('games')" id="nav-games">
+        <span class="admin-nav-icon">🎮</span>
+        <span class="admin-nav-label">Juegos</span>
+        <span class="admin-nav-count" id="nav-games-count">0</span>
+      </button>
+    </nav>
+    <div class="admin-content">
+      <!-- DASHBOARD -->
+      <div class="admin-section active" id="section-dashboard">
+        <div style="margin-bottom:24px">
+          <h2 style="font-size:22px;font-weight:900;font-family:Orbitron,sans-serif">Dashboard</h2>
+          <p style="font-size:13px;color:var(--muted2);margin-top:4px">Resumen general de la plataforma</p>
+        </div>
+        <div class="admin-stats-grid" id="dashboardStats"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:4px" id="dashboardDetails"></div>
+      </div>
+
+      <!-- USERS -->
+      <div class="admin-section" id="section-users">
+        <div class="admin-section-header">
+          <div>
+            <h2>Usuarios</h2>
+            <p>Gestiona todos los usuarios registrados</p>
+          </div>
+        </div>
+        <div class="admin-table-wrap">
+          <table class="admin-table" id="usersTable">
+            <thead>
+              <tr>
+                <th>Usuario</th>
+                <th>Email</th>
+                <th>Rol</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="usersTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- VIP REVENUE -->
+      <div class="admin-section" id="section-vip">
+        <div class="admin-section-header">
+          <div>
+            <h2>Ingresos VIP</h2>
+            <p>Historial de activaciones y revenue generado</p>
+          </div>
+        </div>
+        <div class="revenue-summary" id="revenueSummary"></div>
+        <div class="admin-table-wrap">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Usuario</th>
+                <th>Email</th>
+                <th>Fecha activación</th>
+                <th>Monto</th>
+                <th>Estado</th>
+                <th>Acción</th>
+              </tr>
+            </thead>
+            <tbody id="vipTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- GAMES -->
+      <div class="admin-section" id="section-games">
+        <div class="admin-section-header">
+          <div>
+            <h2>Juegos</h2>
+            <p>Administra el catálogo de juegos</p>
+          </div>
+          <button class="btn-admin-action green" onclick="showAddGameForm()">+ Agregar juego</button>
+        </div>
+        <div class="admin-table-wrap">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Juego</th>
+                <th>Categoría</th>
+                <th>Tipo</th>
+                <th>Disponible</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="gamesTableBody"></tbody>
+          </table>
+        </div>
+        <div id="gameFormContainer"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ TOAST ══════════ -->
+<div id="toast"></div>
+
+<!-- ══════════ SCRIPT ══════════ -->
+<script>
+/* ─── GAME DATA ─── */
+let GAMES = [
+  {id:'snake',title:'Snake',description:'El clásico juego de la serpiente. Come la comida, crece y evita chocarte.',category:'Arcade',emoji:'🐍',color:'g-snake',thumb:'t-snake',available:true,vip:false,tags:['clásico','arcade','serpiente','retro'],instructions:'Flechas del teclado o WASD para mover. Espacio para pausar.'},
+  {id:'shadowfighters',title:'Shadow Fighters',description:'Juego de peleas estilo sombras con combates intensos.',category:'Acción',emoji:'🥷',color:'g-space',thumb:'t-space',available:true,vip:false,tags:['peleas','acción','shadow'],instructions:'Usa el teclado para jugar.'},
+  {id:'vip_racer',title:'Turbo Racer VIP',description:'Carreras de alta velocidad con pistas exclusivas. Solo para miembros VIP.',category:'Racing',emoji:'🏎️',color:'g-vip1',thumb:'t-vip1',available:true,vip:true,tags:['vip','carreras','velocidad','exclusivo'],instructions:'Flechas para conducir. Evita obstáculos y gana la carrera.'},
+  {id:'vip_rpg',title:'Dark Dungeon VIP',description:'RPG de mazmorras con combates por turnos y items épicos. Exclusivo VIP.',category:'RPG',emoji:'⚔️',color:'g-vip2',thumb:'t-vip2',available:true,vip:true,tags:['vip','rpg','mazmorra','épico'],instructions:'Haz clic para atacar y explorar la mazmorra.'},
+  {id:'tetris',title:'Tetris',description:'El legendario juego de piezas. Encaja los bloques para completar líneas.',category:'Puzzle',emoji:'🟦',color:'g-tetris',thumb:'t-tetris',available:false,vip:false,tags:['clásico','puzzle','bloques','retro']},
+  {id:'pong',title:'Pong',description:'El primer videojuego de la historia. Rebota la pelota y vence a tu oponente.',category:'Arcade',emoji:'🏓',color:'g-pong',thumb:'t-pong',available:false,vip:false,tags:['clásico','deportes','2 jugadores','retro']},
+  {id:'memory',title:'Memory',description:'Pon a prueba tu memoria. Encuentra todos los pares de cartas.',category:'Puzzle',emoji:'🃏',color:'g-memory',thumb:'t-memory',available:false,vip:false,tags:['memoria','puzzle','cartas']},
+  {id:'space',title:'Space Invaders',description:'Defiende la Tierra de los invasores alienígenas. Dispara y esquiva.',category:'Acción',emoji:'👾',color:'g-space',thumb:'t-space',available:false,vip:false,tags:['acción','disparos','aliens','retro']},
+  {id:'flappy',title:'Flappy Bird',description:'Mantén al pájaro volando entre los tubos. Un solo toque para volar.',category:'Arcade',emoji:'🐦',color:'g-flappy',thumb:'t-flappy',available:false,vip:false,tags:['arcade','pájaro','adictivo']},
+];
+
+const CATEGORIES = ['Todos','Arcade','Puzzle','Acción','Racing','RPG','Estrategia'];
+
+/* ─── AUTH STATE ─── */
+function getUsers(){
+  const users = JSON.parse(localStorage.getItem('gz_users')||'[]');
+  // Ensure admin always exists
+  const hasAdmin = users.some(u=>u.email==='admin@gamezone.com');
+  if(!hasAdmin){
+    users.push({id:'admin_001',username:'Admin',email:'admin@gamezone.com',password:'admin123',vip:false,isAdmin:true,joinDate:new Date().toISOString()});
+    saveUsers(users);
+  }
+  return users;
+}
+function saveUsers(u){localStorage.setItem('gz_users',JSON.stringify(u))}
+function getCurrentUser(){return JSON.parse(localStorage.getItem('gz_current')||'null')}
+function setCurrentUser(u){localStorage.setItem('gz_current',JSON.stringify(u))}
+function clearCurrentUser(){localStorage.removeItem('gz_current')}
+function getVipLogs(){return JSON.parse(localStorage.getItem('gz_vip_logs')||'[]')}
+function saveVipLogs(l){localStorage.setItem('gz_vip_logs',JSON.stringify(l))}
+
+/* ─── FILTER STATE ─── */
+let state={search:'',category:'Todos',onlyAvailable:false};
+
+function filtered(){
+  return GAMES.filter(g=>{
+    const q=state.search.toLowerCase();
+    const matchSearch=!q||g.title.toLowerCase().includes(q)||g.description.toLowerCase().includes(q)||(g.tags||[]).some(t=>t.toLowerCase().includes(q));
+    const matchCat=state.category==='Todos'||g.category===state.category;
+    const matchAvail=!state.onlyAvailable||g.available;
+    return matchSearch&&matchCat&&matchAvail;
+  });
+}
+
+/* ─── RENDER ─── */
+function render(){renderPills();renderGrid();renderQuickPlay();updateResultsHeader();updateHeroStats();renderVipBanner();updateHeaderAuth()}
+
+function renderVipBanner(){
+  const u=getCurrentUser();
+  const el=document.getElementById('vipBannerContainer');
+  if(u&&u.vip){
+    el.innerHTML=`<div class="vip-active-card"><div class="vip-active-left"><div class="vip-active-icon">👑</div><div class="vip-active-text"><h3>Membresía VIP Activa</h3><p>Bienvenido, ${u.username}. Tienes acceso a todos los juegos exclusivos.</p></div></div><div class="vip-stars">⭐⭐⭐</div></div>`;
+  } else {
+    el.innerHTML=`<div class="vip-banner"><div class="vip-banner-left"><div class="vip-banner-icon">👑</div><div><div class="vip-banner-text"><h3>Hazte miembro VIP</h3><p>Desbloquea juegos exclusivos y beneficios premium</p></div><div class="vip-features" style="margin-top:8px"><span class="vip-feat">🎮 Juegos exclusivos</span><span class="vip-feat">⚡ Acceso anticipado</span><span class="vip-feat">🏆 Badge VIP</span></div></div></div><button class="btn-vip" onclick="handleVipClick()">Ver VIP →</button></div>`;
+  }
+}
+
+function updateHeaderAuth(){
+  const u=getCurrentUser();
+  const authEl=document.getElementById('headerAuth');
+  const profileEl=document.getElementById('headerProfile');
+  if(u){
+    authEl.classList.add('hidden');
+    profileEl.classList.remove('hidden');
+    const initials=u.username.charAt(0).toUpperCase();
+    const av=document.getElementById('profileAvatar');
+    av.textContent=initials;
+    av.className='profile-avatar'+(u.isAdmin?' admin':u.vip?' vip':'');
+    document.getElementById('profileName').textContent=u.username;
+    const roleEl=document.getElementById('profileRole');
+    roleEl.textContent=u.isAdmin?'🛡️ Admin':u.vip?'👑 VIP':'Free';
+    roleEl.className='profile-role'+(u.isAdmin?' admin':u.vip?' vip':'');
+    document.getElementById('dropdownName').textContent=u.username;
+    document.getElementById('dropdownEmail').textContent=u.email;
+    const vipBadge=document.getElementById('dropdownVipBadge');
+    const adminBadge=document.getElementById('dropdownAdminBadge');
+    const adminBtn=document.getElementById('adminPanelBtn');
+    if(u.isAdmin){
+      adminBadge.classList.remove('hidden');
+      adminBtn.classList.remove('hidden');
+      vipBadge.classList.add('hidden');
+    } else {
+      adminBadge.classList.add('hidden');
+      adminBtn.classList.add('hidden');
+      u.vip?vipBadge.classList.remove('hidden'):vipBadge.classList.add('hidden');
+    }
+  } else {
+    authEl.classList.remove('hidden');
+    profileEl.classList.add('hidden');
+  }
+}
+
+function renderPills(){
+  const c=document.getElementById('pillsContainer');
+  c.innerHTML=CATEGORIES.map(cat=>{
+    const count=cat==='Todos'?GAMES.length:GAMES.filter(g=>g.category===cat).length;
+    const active=state.category===cat;
+    return `<button class="pill${active?' active':''}" onclick="setCategory('${cat}')">${cat}<span class="pill-count">${count}</span></button>`;
+  }).join('');
+}
+
+function renderGrid(){
+  const list=filtered();
+  const grid=document.getElementById('gameGrid');
+  const empty=document.getElementById('emptyState');
+  if(list.length===0){grid.innerHTML='';grid.style.display='none';empty.style.display='flex';return}
+  empty.style.display='none';grid.style.display='grid';
+  grid.innerHTML=list.map(g=>cardHTML(g)).join('');
+}
+
+function cardHTML(g){
+  const u=getCurrentUser();
+  const isVipLocked=g.vip&&(!u||!u.vip)&&!(u&&u.isAdmin);
+  const thumbDiv=`<div class="card-thumb-placeholder ${g.thumb}">${g.emoji}</div>`;
+  const overlayDiv=`<div class="card-thumb-overlay ${g.thumb}"></div>`;
+  let badge='';
+  if(g.vip){badge=`<span class="card-badge vip-badge">👑 VIP</span>`;}
+  else if(g.available){badge=`<span class="card-badge" style="background:rgba(30,41,59,.9);color:var(--muted)">${g.category}</span>`;}
+  else{badge=`<span class="card-badge" style="background:rgba(30,41,59,.9);color:var(--muted2)">${g.category}</span>`;}
+  let lockOrSoon='';
+  if(isVipLocked){lockOrSoon=`<div class="card-lock"><span>🔒</span><p>Solo VIP</p></div>`;}
+  else if(!g.available){lockOrSoon=`<div class="card-soon"><span>Próximamente</span></div>`;}
+  const playBtn=g.available&&!isVipLocked
+    ?`<button class="card-play ${g.vip?'card-play-vip':''}" style="${!g.vip?'background:linear-gradient(135deg,'+getGradColors(g.color)+')':''}" onclick="openGame('${g.id}')">${g.vip?'👑 Jugar (VIP)':'▶ Jugar ahora'}</button>`
+    :isVipLocked?`<button class="card-play card-play-vip" onclick="handleVipClick()">🔒 Activar VIP</button>`:'';
+  const tags=(g.tags||[]).slice(0,3).map(t=>`<span class="card-tag">#${t}</span>`).join('');
+  const cardClass=`game-card ${isVipLocked?'vip-locked':(g.available?'available':'unavailable')}${g.vip?' vip-card':''}`;
+  return `<div class="${cardClass}" ${g.available&&!isVipLocked?`onclick="openGame('${g.id}')"`:''}><div class="card-thumb">${thumbDiv}${overlayDiv}${badge}<span class="card-emoji">${g.emoji}</span>${lockOrSoon}</div><div class="card-body"><div class="card-title">${g.title}</div><div class="card-desc">${g.description}</div><div class="card-tags">${tags}</div>${playBtn}</div></div>`;
+}
+
+function getGradColors(c){
+  const m={'g-snake':'#22c55e,#059669','g-space':'#06b6d4,#0284c7','g-tetris':'#3b82f6,#4338ca','g-pong':'#f97316,#d97706','g-memory':'#a855f7,#7c3aed','g-flappy':'#eab308,#f97316'};
+  return m[c]||'#7c3aed,#06b6d4';
+}
+
+function renderQuickPlay(){
+  const available=GAMES.filter(g=>g.available);
+  const el=document.getElementById('quickGrid');
+  el.innerHTML=available.map(g=>{
+    const u=getCurrentUser();
+    const isVipLocked=g.vip&&(!u||!u.vip)&&!(u&&u.isAdmin);
+    return `<button class="quick-card ${g.color}${g.vip?' vip-quick':''}" onclick="${isVipLocked?'handleVipClick()':'openGame(\''+g.id+'\')'}">${g.vip?`<span class="quick-vip-tag">VIP</span>`:''}<span class="quick-emoji">${g.emoji}</span><div class="quick-info"><h4>${g.title}</h4><p>${g.category}</p></div><span class="quick-arrow">→</span></button>`;
+  }).join('');
+}
+
+function updateResultsHeader(){
+  const list=filtered();
+  document.getElementById('resultsTitle').textContent=state.search?`Resultados para "${state.search}"`:state.category!=='Todos'?state.category:'Todos los juegos';
+  document.getElementById('resultsCount').textContent=`${list.length} juego${list.length!==1?'s':''} encontrado${list.length!==1?'s':''}`;
+}
+
+function updateHeroStats(){
+  const av=GAMES.filter(g=>g.available).length;
+  const dev=GAMES.filter(g=>!g.available).length;
+  document.getElementById('availableCount').textContent=`${av} juego${av!==1?'s':''} disponible${av!==1?'s':''}`;
+  document.getElementById('devCount').textContent=`${dev} en desarrollo`;
+}
+
+/* ─── FILTERS ─── */
+function setCategory(cat){state.category=cat;render()}
+function clearFilters(){state={search:'',category:'Todos',onlyAvailable:false};document.getElementById('searchInput').value='';document.getElementById('availableBtn').classList.remove('active');render()}
+
+document.getElementById('searchInput').addEventListener('input',function(){
+  state.search=this.value;
+  document.getElementById('clearSearch').classList.toggle('hidden',!this.value);
+  render();
+});
+document.getElementById('clearSearch').addEventListener('click',function(){
+  state.search='';document.getElementById('searchInput').value='';this.classList.add('hidden');render();
+});
+document.getElementById('availableBtn').addEventListener('click',function(){
+  state.onlyAvailable=!state.onlyAvailable;this.classList.toggle('active',state.onlyAvailable);render();
+});
+
+/* ─── DROPDOWN ─── */
+let dropdownOpen=false;
+function toggleDropdown(){
+  dropdownOpen=!dropdownOpen;
+  document.getElementById('profileDropdown').classList.toggle('hidden',!dropdownOpen);
+}
+document.addEventListener('click',e=>{
+  if(!e.target.closest('#headerProfile'))closeDropdown();
+});
+function closeDropdown(){dropdownOpen=false;document.getElementById('profileDropdown').classList.add('hidden');}
+
+/* ─── AUTH ─── */
+function openAuthModal(tab='login'){
+  document.getElementById('authBackdrop').style.display='flex';
+  switchAuthTab(tab);
+}
+function closeAuthModal(){document.getElementById('authBackdrop').style.display='none';}
+function switchAuthTab(tab){
+  document.getElementById('loginForm').classList.toggle('hidden',tab!=='login');
+  document.getElementById('registerForm').classList.toggle('hidden',tab!=='register');
+  document.getElementById('tabLogin').classList.toggle('active',tab==='login');
+  document.getElementById('tabRegister').classList.toggle('active',tab==='register');
+}
+document.getElementById('authBackdrop').addEventListener('click',e=>{if(e.target===document.getElementById('authBackdrop'))closeAuthModal()});
+
+function doLogin(){
+  const email=document.getElementById('loginEmail').value.trim();
+  const pass=document.getElementById('loginPassword').value;
+  const errEl=document.getElementById('loginError');
+  errEl.style.display='none';
+  if(!email||!pass){errEl.textContent='Completa todos los campos';errEl.style.display='block';return}
+  // Check admin
+  if(email==='admin@gamezone.com'&&pass==='admin123'){
+    const adminUser={id:'admin_001',username:'Admin',email:'admin@gamezone.com',vip:false,isAdmin:true,joinDate:new Date().toISOString()};
+    setCurrentUser(adminUser);
+    // ensure admin in users list
+    let users=getUsers();
+    if(!users.some(u=>u.email==='admin@gamezone.com')){
+      users.push({...adminUser,password:'admin123'});
+      saveUsers(users);
+    }
+    closeAuthModal();
+    render();
+    showToast('🛡️ Bienvenido, Administrador','admin-toast');
+    return;
+  }
+  const users=getUsers();
+  const user=users.find(u=>u.email===email&&u.password===pass);
+  if(!user){errEl.textContent='Email o contraseña incorrectos';errEl.style.display='block';return}
+  setCurrentUser(user);
+  closeAuthModal();
+  render();
+  showToast(`¡Bienvenido, ${user.username}! 🎮`,'success');
+}
+
+function doRegister(){
+  const username=document.getElementById('regUsername').value.trim();
+  const email=document.getElementById('regEmail').value.trim();
+  const pass=document.getElementById('regPassword').value;
+  const errEl=document.getElementById('registerError');
+  errEl.style.display='none';
+  if(!username||!email||!pass){errEl.textContent='Completa todos los campos';errEl.style.display='block';return}
+  if(pass.length<6){errEl.textContent='La contraseña debe tener al menos 6 caracteres';errEl.style.display='block';return}
+  const users=getUsers();
+  if(users.some(u=>u.email===email)){errEl.textContent='Este email ya está registrado';errEl.style.display='block';return}
+  const newUser={id:'u_'+Date.now(),username,email,password:pass,vip:false,isAdmin:false,joinDate:new Date().toISOString()};
+  users.push(newUser);
+  saveUsers(users);
+  setCurrentUser(newUser);
+  closeAuthModal();
+  render();
+  showToast(`¡Cuenta creada! Bienvenido, ${username} 🎮`,'success');
+}
+
+function logout(){
+  clearCurrentUser();
+  closeDropdown();
+  render();
+  showToast('Sesión cerrada. ¡Hasta pronto!');
+}
+
+/* ─── VIP ─── */
+function handleVipClick(){
+  const u=getCurrentUser();
+  if(!u){openAuthModal('login');return}
+  openVipModal();
+}
+function openVipModal(){document.getElementById('vipBackdrop').style.display='flex'}
+function closeVipModal(){document.getElementById('vipBackdrop').style.display='none'}
+document.getElementById('vipBackdrop').addEventListener('click',e=>{if(e.target===document.getElementById('vipBackdrop'))closeVipModal()});
+
+function activateVip(){
+  const u=getCurrentUser();
+  if(!u){closeVipModal();openAuthModal('login');return}
+  if(u.vip){showToast('¡Ya tienes VIP activo! 👑','vip-toast');closeVipModal();return}
+  u.vip=true;
+  setCurrentUser(u);
+  const users=getUsers();
+  const idx=users.findIndex(x=>x.id===u.id);
+  if(idx>-1){users[idx].vip=true;saveUsers(users)}
+  // Log VIP activation
+  const logs=getVipLogs();
+  logs.push({userId:u.id,username:u.username,email:u.email,amount:4.99,date:new Date().toISOString(),active:true});
+  saveVipLogs(logs);
+  closeVipModal();
+  render();
+  showToast('👑 ¡VIP activado! Bienvenido al club exclusivo','vip-toast');
+}
+
+/* ─── GAME MODAL ─── */
+function openGame(id){
+  const g=GAMES.find(x=>x.id===id);
+  if(!g||!g.available)return;
+  const u=getCurrentUser();
+  if(g.vip&&(!u||!u.vip)&&!(u&&u.isAdmin)){handleVipClick();return}
+  const header=document.getElementById('modalHeader');
+  header.style.background=`var(--bg3)`;
+  document.getElementById('modalEmoji').textContent=g.emoji;
+  document.getElementById('modalTitle').textContent=g.title;
+  document.getElementById('modalCat').textContent=g.category;
+  const how=document.getElementById('modalHow');
+  if(g.instructions){how.innerHTML=`<b>📋 Cómo jugar:</b> ${g.instructions}`;how.style.display='block';}
+  else{how.style.display='none'}
+  const body=document.getElementById('modalBody');
+  if(id==='snake'){body.innerHTML=snakeHTML();initSnake()}
+  else if(id==='shadowfighters'){body.innerHTML=`<div style="text-align:center;padding:60px 20px"><p style="font-size:52px">🥷</p><p style="color:var(--cyan);font-size:20px;margin-top:10px;font-weight:800;font-family:Orbitron,sans-serif">Shadow Fighters</p><p style="color:var(--muted);font-size:14px;margin-top:8px">Juego en construcción — ¡Próximamente!</p></div>`;}
+  else if(id==='vip_racer'){body.innerHTML=`<div style="text-align:center;padding:60px 20px"><p style="font-size:52px">🏎️</p><p style="color:var(--gold2);font-size:20px;margin-top:10px;font-weight:800;font-family:Orbitron,sans-serif">Turbo Racer VIP</p><p style="color:var(--muted);font-size:14px;margin-top:8px">Juego exclusivo VIP · Próxima versión incluirá el juego completo</p><div style="margin-top:24px;padding:16px;background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2);border-radius:14px;display:inline-block"><p style="color:var(--gold2);font-size:13px;font-weight:700">👑 Gracias por ser miembro VIP</p></div></div>`;}
+  else if(id==='vip_rpg'){body.innerHTML=`<div style="text-align:center;padding:60px 20px"><p style="font-size:52px">⚔️</p><p style="color:#c084fc;font-size:20px;margin-top:10px;font-weight:800;font-family:Orbitron,sans-serif">Dark Dungeon VIP</p><p style="color:var(--muted);font-size:14px;margin-top:8px">Juego RPG exclusivo VIP · Próxima versión incluirá el juego completo</p><div style="margin-top:24px;padding:16px;background:rgba(168,85,247,.08);border:1px solid rgba(168,85,247,.2);border-radius:14px;display:inline-block"><p style="color:#c084fc;font-size:13px;font-weight:700">👑 Gracias por ser miembro VIP</p></div></div>`;}
+  else{body.innerHTML=`<div style="text-align:center;padding:60px 20px"><p style="font-size:52px">🚧</p><h3 style="margin-top:12px;color:var(--muted)">Juego en desarrollo...</h3></div>`;}
+  document.getElementById('modalBackdrop').classList.add('show');
+  document.body.style.overflow='hidden';
+}
+
+function closeModal(){
+  destroySnake();
+  document.getElementById('modalBackdrop').classList.remove('show');
+  document.getElementById('modalBody').innerHTML='';
+  document.body.style.overflow='';
+}
+document.getElementById('modalClose').addEventListener('click',closeModal);
+document.getElementById('modalBackdrop').addEventListener('click',e=>{if(e.target===document.getElementById('modalBackdrop'))closeModal()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();closeAuthModal();closeVipModal()}});
+
+/* ─── SNAKE ─── */
+const CELL=20,COLS=20,ROWS=20,W=CELL*COLS,H=CELL*ROWS;
+let snakeState=null,snakeInterval=null,snakeKeyHandler=null;
+function snakeHTML(){return `<div id="snakeWrap"><div class="snake-stats"><div class="snake-stat"><label>Score</label><span class="sstat-score" id="sScore">0</span></div><div class="snake-stat"><label>Best</label><span class="sstat-best" id="sBest">0</span></div><div class="snake-stat"><label>Length</label><span class="sstat-len" id="sLen">3</span></div></div><div class="canvas-wrap"><canvas id="snakeCanvas" width="${W}" height="${H}"></canvas><div class="canvas-overlay" id="snakeOverlay"><div class="overlay-emoji">🐍</div><div class="overlay-title" style="color:#22c55e">Snake</div><div class="overlay-sub">Usa las flechas / WASD para moverte</div><button class="btn-start" id="snakeStartBtn">▶ Comenzar</button></div></div><div class="dpad"><div class="dpad-row"><button class="dpad-btn" id="dUp">▲</button></div><div class="dpad-row"><button class="dpad-btn" id="dLeft">◀</button><button class="dpad-btn" id="dDown">▼</button><button class="dpad-btn" id="dRight">▶</button></div></div><div class="snake-actions" id="snakeActions" style="display:none"><button class="btn-sm" id="snakePauseBtn">⏸ Pausar</button><button class="btn-sm" id="snakeRestartBtn">🔄 Reiniciar</button></div></div>`;}
+function initSnake(){const hs=parseInt(localStorage.getItem('snake-highscore')||'0');snakeState={snake:[{x:10,y:10},{x:9,y:10},{x:8,y:10}],food:{x:15,y:10},dir:'RIGHT',pending:'RIGHT',score:0,highScore:hs,speed:150,status:'idle'};updateSnakeUI();drawSnake();document.getElementById('snakeStartBtn').addEventListener('click',startSnake);document.getElementById('dUp').addEventListener('pointerdown',()=>dpadPress('UP'));document.getElementById('dDown').addEventListener('pointerdown',()=>dpadPress('DOWN'));document.getElementById('dLeft').addEventListener('pointerdown',()=>dpadPress('LEFT'));document.getElementById('dRight').addEventListener('pointerdown',()=>dpadPress('RIGHT'));document.getElementById('snakePauseBtn').addEventListener('click',togglePause);document.getElementById('snakeRestartBtn').addEventListener('click',startSnake);snakeKeyHandler=e=>{const map={ArrowUp:'UP',ArrowDown:'DOWN',ArrowLeft:'LEFT',ArrowRight:'RIGHT',w:'UP',W:'UP',s:'DOWN',S:'DOWN',a:'LEFT',A:'LEFT',d:'RIGHT',D:'RIGHT'};if(map[e.key]){e.preventDefault();snakeState.pending=map[e.key]}if(e.key===' '){e.preventDefault();togglePause()}};window.addEventListener('keydown',snakeKeyHandler);}
+function destroySnake(){if(snakeInterval)clearInterval(snakeInterval);if(snakeKeyHandler)window.removeEventListener('keydown',snakeKeyHandler);snakeState=snakeInterval=snakeKeyHandler=null}
+function dpadPress(dir){if(!snakeState)return;snakeState.pending=dir;if(snakeState.status==='idle'||snakeState.status==='over')startSnake()}
+function togglePause(){if(!snakeState)return;if(snakeState.status==='running'){snakeState.status='paused';clearInterval(snakeInterval);showOverlay('paused')}else if(snakeState.status==='paused'){snakeState.status='running';hideOverlay();snakeInterval=setInterval(snakeLoop,snakeState.speed)}}
+function startSnake(){if(!snakeState)return;clearInterval(snakeInterval);Object.assign(snakeState,{snake:[{x:10,y:10},{x:9,y:10},{x:8,y:10}],food:{x:15,y:10},dir:'RIGHT',pending:'RIGHT',score:0,speed:150,status:'running'});hideOverlay();document.getElementById('snakeActions').style.display='flex';updateSnakeUI();drawSnake();snakeInterval=setInterval(snakeLoop,snakeState.speed);}
+function snakeLoop(){const s=snakeState;if(!s||s.status!=='running')return;const opp={UP:'DOWN',DOWN:'UP',LEFT:'RIGHT',RIGHT:'LEFT'};if(s.pending!==opp[s.dir])s.dir=s.pending;const head=s.snake[0];const next={x:head.x+(s.dir==='RIGHT'?1:s.dir==='LEFT'?-1:0),y:head.y+(s.dir==='DOWN'?1:s.dir==='UP'?-1:0)};if(next.x<0||next.x>=COLS||next.y<0||next.y>=ROWS)return gameOver();if(s.snake.some(p=>p.x===next.x&&p.y===next.y))return gameOver();s.snake.unshift(next);if(next.x===s.food.x&&next.y===s.food.y){s.score+=10;if(s.score>s.highScore){s.highScore=s.score;localStorage.setItem('snake-highscore',s.highScore)}s.speed=Math.max(60,s.speed-2);clearInterval(snakeInterval);snakeInterval=setInterval(snakeLoop,s.speed);s.food=randomSnakeFood(s.snake);}else{s.snake.pop()}updateSnakeUI();drawSnake();}
+function gameOver(){const s=snakeState;s.status='over';clearInterval(snakeInterval);showOverlay('over',s.score,s.score>0&&s.score>=s.highScore)}
+function randomSnakeFood(snake){let p;do{p={x:Math.floor(Math.random()*COLS),y:Math.floor(Math.random()*ROWS)}}while(snake.some(s=>s.x===p.x&&s.y===p.y));return p}
+function updateSnakeUI(){const s=snakeState;if(!s)return;const el=id=>document.getElementById(id);if(el('sScore'))el('sScore').textContent=s.score;if(el('sBest'))el('sBest').textContent=s.highScore;if(el('sLen'))el('sLen').textContent=s.snake.length;}
+function showOverlay(type,score=0,isRecord=false){const ov=document.getElementById('snakeOverlay');if(!ov)return;ov.classList.remove('hide');if(type==='idle'){ov.innerHTML=`<div class="overlay-emoji">🐍</div><div class="overlay-title" style="color:#22c55e">Snake</div><div class="overlay-sub">Usa las flechas / WASD para moverte</div><button class="btn-start" id="snakeStartBtn">▶ Comenzar</button>`;document.getElementById('snakeStartBtn').addEventListener('click',startSnake);}else if(type==='over'){ov.innerHTML=`<div class="overlay-emoji">💀</div><div class="overlay-title" style="color:#ef4444">Game Over</div><div class="overlay-sub">Puntuación: ${score}</div>${isRecord?`<div style="color:#eab308;font-weight:700;font-size:14px">🏆 ¡Nuevo récord!</div>`:''}<button class="btn-start" id="snakeStartBtn">Jugar de nuevo</button>`;document.getElementById('snakeStartBtn').addEventListener('click',startSnake);}else if(type==='paused'){ov.innerHTML=`<div class="overlay-emoji">⏸</div><div class="overlay-title" style="color:#eab308">Pausado</div><button class="btn-start" id="snakeResumeBtn">Continuar</button>`;document.getElementById('snakeResumeBtn').addEventListener('click',togglePause);}}
+function hideOverlay(){const ov=document.getElementById('snakeOverlay');if(ov)ov.classList.add('hide')}
+function drawSnake(){const canvas=document.getElementById('snakeCanvas');if(!canvas||!snakeState)return;const ctx=canvas.getContext('2d');const{snake,food,dir}=snakeState;ctx.fillStyle='#0f172a';ctx.fillRect(0,0,W,H);ctx.strokeStyle='rgba(255,255,255,0.03)';ctx.lineWidth=.5;for(let x=0;x<=COLS;x++){ctx.beginPath();ctx.moveTo(x*CELL,0);ctx.lineTo(x*CELL,H);ctx.stroke()}for(let y=0;y<=ROWS;y++){ctx.beginPath();ctx.moveTo(0,y*CELL);ctx.lineTo(W,y*CELL);ctx.stroke()}snake.forEach((seg,i)=>{const ratio=i/snake.length;const g=Math.floor(220-ratio*80);const b=Math.floor(100+ratio*60);ctx.fillStyle=i===0?'#22c55e':`rgb(20,${g},${b})`;const pad=i===0?1:2;ctx.beginPath();ctx.roundRect(seg.x*CELL+pad,seg.y*CELL+pad,CELL-pad*2,CELL-pad*2,i===0?6:4);ctx.fill();if(i===0){ctx.fillStyle='#0f172a';const eyeR=3;if(dir==='RIGHT'||dir==='LEFT'){const ex=dir==='RIGHT'?seg.x*CELL+CELL-6:seg.x*CELL+4;ctx.beginPath();ctx.arc(ex,seg.y*CELL+5,eyeR,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.arc(ex,seg.y*CELL+CELL-5,eyeR,0,Math.PI*2);ctx.fill();}else{const ey=dir==='DOWN'?seg.y*CELL+CELL-6:seg.y*CELL+4;ctx.beginPath();ctx.arc(seg.x*CELL+5,ey,eyeR,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.arc(seg.x*CELL+CELL-5,ey,eyeR,0,Math.PI*2);ctx.fill();}}});const grd=ctx.createRadialGradient(food.x*CELL+CELL/2,food.y*CELL+CELL/2,2,food.x*CELL+CELL/2,food.y*CELL+CELL/2,CELL/2);grd.addColorStop(0,'#fbbf24');grd.addColorStop(1,'#ef4444');ctx.shadowColor='#ef4444';ctx.shadowBlur=14;ctx.fillStyle=grd;ctx.beginPath();ctx.arc(food.x*CELL+CELL/2,food.y*CELL+CELL/2,CELL/2-2,0,Math.PI*2);ctx.fill();ctx.shadowBlur=0;}
+
+/* ═══════════════════════════════════
+   ─── ADMIN PANEL ───
+═══════════════════════════════════ */
+function openAdminPanel(){
+  const u=getCurrentUser();
+  if(!u||!u.isAdmin){showToast('Acceso denegado','admin-toast');return}
+  document.getElementById('adminBackdrop').classList.add('show');
+  document.body.style.overflow='hidden';
+  refreshAdminData();
+}
+function closeAdminPanel(){
+  document.getElementById('adminBackdrop').classList.remove('show');
+  document.body.style.overflow='';
+}
+
+function switchAdminTab(tab){
+  ['dashboard','users','vip','games'].forEach(t=>{
+    document.getElementById(`section-${t}`).classList.toggle('active',t===tab);
+    document.getElementById(`nav-${t}`).classList.toggle('active',t===tab);
+  });
+  refreshAdminData();
+}
+
+function refreshAdminData(){
+  const users=getUsers().filter(u=>!u.isAdmin);
+  const vipLogs=getVipLogs();
+  const vipUsers=users.filter(u=>u.vip);
+
+  // Update nav counts
+  document.getElementById('nav-users-count').textContent=users.length;
+  document.getElementById('nav-vip-count').textContent=vipLogs.length;
+  document.getElementById('nav-games-count').textContent=GAMES.length;
+
+  renderDashboard(users,vipLogs,vipUsers);
+  renderUsersTable(users);
+  renderVipTable(vipLogs);
+  renderGamesTable();
+}
+
+function renderDashboard(users,vipLogs,vipUsers){
+  const totalRevenue=(vipLogs.reduce((s,l)=>s+(l.amount||4.99),0)).toFixed(2);
+  const activeVip=vipLogs.filter(l=>l.active).length;
+  document.getElementById('dashboardStats').innerHTML=`
+    <div class="admin-stat-card red"><div class="admin-stat-icon">👥</div><div class="admin-stat-value">${users.length}</div><div class="admin-stat-label">Usuarios Totales</div></div>
+    <div class="admin-stat-card gold"><div class="admin-stat-icon">👑</div><div class="admin-stat-value">${vipUsers.length}</div><div class="admin-stat-label">Miembros VIP</div></div>
+    <div class="admin-stat-card green"><div class="admin-stat-icon">💰</div><div class="admin-stat-value">$${totalRevenue}</div><div class="admin-stat-label">Ingresos VIP</div></div>
+    <div class="admin-stat-card blue"><div class="admin-stat-icon">🎮</div><div class="admin-stat-value">${GAMES.filter(g=>g.available).length}/${GAMES.length}</div><div class="admin-stat-label">Juegos Activos</div></div>
+  `;
+
+  const recentUsers=users.slice(-5).reverse();
+  const recentVip=vipLogs.slice(-5).reverse();
+  document.getElementById('dashboardDetails').innerHTML=`
+    <div style="background:rgba(15,23,42,.6);border:1px solid var(--border);border-radius:14px;padding:18px">
+      <h3 style="font-size:14px;font-weight:800;margin-bottom:14px;color:var(--muted2);text-transform:uppercase;letter-spacing:.08em">Últimos usuarios</h3>
+      ${recentUsers.length===0?`<p style="color:var(--muted2);font-size:13px">Sin usuarios aún</p>`:recentUsers.map(u=>`
+        <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(51,65,85,.3)">
+          <div style="width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,#7c3aed,#06b6d4);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:#fff;flex-shrink:0">${u.username.charAt(0).toUpperCase()}</div>
+          <div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${u.username}</div><div style="font-size:11px;color:var(--muted2)">${u.email}</div></div>
+          ${u.vip?`<span class="badge vip">👑 VIP</span>`:`<span class="badge free">Free</span>`}
+        </div>`).join('')}
+    </div>
+    <div style="background:rgba(15,23,42,.6);border:1px solid var(--border);border-radius:14px;padding:18px">
+      <h3 style="font-size:14px;font-weight:800;margin-bottom:14px;color:var(--muted2);text-transform:uppercase;letter-spacing:.08em">Últimas activaciones VIP</h3>
+      ${recentVip.length===0?`<p style="color:var(--muted2);font-size:13px">Sin activaciones aún</p>`:recentVip.map(l=>`
+        <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(51,65,85,.3)">
+          <div style="font-size:20px">👑</div>
+          <div style="flex:1"><div style="font-size:13px;font-weight:700">${l.username}</div><div style="font-size:11px;color:var(--muted2)">${new Date(l.date).toLocaleDateString('es-ES')}</div></div>
+          <div style="font-size:14px;font-weight:800;color:var(--gold2)">$${(l.amount||4.99).toFixed(2)}</div>
+        </div>`).join('')}
+    </div>
+  `;
+}
+
+function renderUsersTable(users){
+  const tbody=document.getElementById('usersTableBody');
+  if(users.length===0){tbody.innerHTML=`<tr><td colspan="5" style="text-align:center;padding:32px;color:var(--muted2)">Sin usuarios registrados</td></tr>`;return}
+  tbody.innerHTML=users.map(u=>`
+    <tr>
+      <td><div style="display:flex;align-items:center;gap:10px">
+        <div style="width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,#7c3aed,#06b6d4);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:900;color:#fff;flex-shrink:0">${u.username.charAt(0).toUpperCase()}</div>
+        <span style="font-weight:700">${u.username}</span>
+      </div></td>
+      <td style="color:var(--muted)">${u.email}</td>
+      <td>${u.vip?`<span class="badge vip">👑 VIP</span>`:`<span class="badge free">Free</span>`}</td>
+      <td><span class="badge active">● Activo</span></td>
+      <td><div class="tbl-actions">
+        ${u.vip
+          ?`<button class="tbl-btn demote" onclick="toggleUserVip('${u.id}',false)">Quitar VIP</button>`
+          :`<button class="tbl-btn promote" onclick="toggleUserVip('${u.id}',true)">👑 Dar VIP</button>`}
+        <button class="tbl-btn del" onclick="deleteUser('${u.id}')">Eliminar</button>
+      </div></td>
+    </tr>`).join('');
+}
+
+function renderVipTable(logs){
+  const tbody=document.getElementById('vipTableBody');
+  const total=logs.reduce((s,l)=>s+(l.amount||4.99),0);
+  const active=logs.filter(l=>l.active).length;
+  document.getElementById('revenueSummary').innerHTML=`
+    <div class="rev-card"><div class="rev-val">$${total.toFixed(2)}</div><div class="rev-label">Ingresos totales</div></div>
+    <div class="rev-card"><div class="rev-val">${logs.length}</div><div class="rev-label">Activaciones</div></div>
+    <div class="rev-card"><div class="rev-val">${active}</div><div class="rev-label">VIP activos</div></div>
+    <div class="rev-card"><div class="rev-val">$${logs.length>0?(total/logs.length).toFixed(2):'0.00'}</div><div class="rev-label">Promedio</div></div>
+  `;
+  if(logs.length===0){tbody.innerHTML=`<tr><td colspan="6" style="text-align:center;padding:32px;color:var(--muted2)">Sin activaciones VIP aún</td></tr>`;return}
+  tbody.innerHTML=[...logs].reverse().map((l,i)=>`
+    <tr>
+      <td style="font-weight:700">${l.username}</td>
+      <td style="color:var(--muted)">${l.email}</td>
+      <td style="color:var(--muted2)">${new Date(l.date).toLocaleDateString('es-ES',{day:'2-digit',month:'short',year:'numeric'})}</td>
+      <td style="color:var(--gold2);font-weight:800">$${(l.amount||4.99).toFixed(2)}</td>
+      <td>${l.active?`<span class="badge active">Activo</span>`:`<span class="badge inactive">Cancelado</span>`}</td>
+      <td><div class="tbl-actions">
+        ${l.active?`<button class="tbl-btn toggle-off" onclick="toggleVipLog(${logs.length-1-i},false)">Cancelar</button>`:`<button class="tbl-btn toggle-on" onclick="toggleVipLog(${logs.length-1-i},true)">Reactivar</button>`}
+      </div></td>
+    </tr>`).join('');
+}
+
+function renderGamesTable(){
+  const tbody=document.getElementById('gamesTableBody');
+  tbody.innerHTML=GAMES.map((g,i)=>`
+    <tr>
+      <td><div style="display:flex;align-items:center;gap:10px"><span style="font-size:22px">${g.emoji}</span><div><div style="font-weight:800">${g.title}</div><div style="font-size:11px;color:var(--muted2)">${g.id}</div></div></div></td>
+      <td><span style="color:var(--muted)">${g.category}</span></td>
+      <td>${g.vip?`<span class="badge vip">👑 VIP</span>`:`<span class="badge free">Free</span>`}</td>
+      <td>${g.available?`<span class="badge active">✓ Disponible</span>`:`<span class="badge inactive">✗ No disponible</span>`}</td>
+      <td><div class="tbl-actions">
+        <button class="tbl-btn ${g.available?'toggle-off':'toggle-on'}" onclick="toggleGameAvailability(${i})">${g.available?'Desactivar':'Activar'}</button>
+        <button class="tbl-btn ${g.vip?'demote':'promote'}" onclick="toggleGameVip(${i})">${g.vip?'Quitar VIP':'Hacer VIP'}</button>
+        <button class="tbl-btn edit" onclick="editGame(${i})">✏️ Editar</button>
+      </div></td>
+    </tr>`).join('');
+}
+
+/* ─── ADMIN ACTIONS ─── */
+function toggleUserVip(userId,giveVip){
+  const users=getUsers();
+  const idx=users.findIndex(u=>u.id===userId);
+  if(idx===-1)return;
+  users[idx].vip=giveVip;
+  saveUsers(users);
+  // Update if current user
+  const cu=getCurrentUser();
+  if(cu&&cu.id===userId){cu.vip=giveVip;setCurrentUser(cu);}
+  // Update VIP logs
+  if(giveVip){
+    const logs=getVipLogs();
+    if(!logs.some(l=>l.userId===userId&&l.active)){
+      logs.push({userId,username:users[idx].username,email:users[idx].email,amount:4.99,date:new Date().toISOString(),active:true});
+      saveVipLogs(logs);
+    }
+  }
+  showToast(giveVip?`👑 VIP otorgado a ${users[idx].username}`:`VIP retirado de ${users[idx].username}`,'admin-toast');
+  refreshAdminData();
+  render();
+}
+
+function deleteUser(userId){
+  if(!confirm('¿Eliminar este usuario? Esta acción no se puede deshacer.'))return;
+  let users=getUsers();
+  const user=users.find(u=>u.id===userId);
+  users=users.filter(u=>u.id!==userId);
+  saveUsers(users);
+  const cu=getCurrentUser();
+  if(cu&&cu.id===userId){clearCurrentUser();render();}
+  showToast(`Usuario ${user?.username||''} eliminado`,'admin-toast');
+  refreshAdminData();
+}
+
+function toggleVipLog(idx,active){
+  const logs=getVipLogs();
+  const realIdx=logs.length-1-idx;
+  if(logs[realIdx])logs[realIdx].active=active;
+  saveVipLogs(logs);
+  // Also update user vip status
+  if(!active){
+    const users=getUsers();
+    const uIdx=users.findIndex(u=>u.id===logs[realIdx]?.userId);
+    if(uIdx>-1){users[uIdx].vip=false;saveUsers(users);const cu=getCurrentUser();if(cu&&cu.id===users[uIdx].id){cu.vip=false;setCurrentUser(cu);render();}}
+  }
+  showToast(active?'VIP reactivado':'VIP cancelado','admin-toast');
+  refreshAdminData();
+}
+
+function toggleGameAvailability(idx){
+  GAMES[idx].available=!GAMES[idx].available;
+  showToast(`${GAMES[idx].title}: ${GAMES[idx].available?'Activado':'Desactivado'}`,'admin-toast');
+  refreshAdminData();
+  render();
+}
+
+function toggleGameVip(idx){
+  GAMES[idx].vip=!GAMES[idx].vip;
+  showToast(`${GAMES[idx].title}: ${GAMES[idx].vip?'Ahora es VIP':'Ya no es VIP'}`,'admin-toast');
+  refreshAdminData();
+  render();
+}
+
+function editGame(idx){
+  const g=GAMES[idx];
+  document.getElementById('gameFormContainer').innerHTML=`
+    <div class="admin-form">
+      <h3>✏️ Editar: ${g.title}</h3>
+      <div class="admin-form-grid">
+        <div class="form-group"><label>Título</label><input type="text" id="ef_title" value="${g.title}"></div>
+        <div class="form-group"><label>Categoría</label>
+          <select id="ef_cat">${CATEGORIES.filter(c=>c!=='Todos').map(c=>`<option value="${c}"${g.category===c?' selected':''}>${c}</option>`).join('')}</select>
+        </div>
+        <div class="form-group"><label>Emoji</label><input type="text" id="ef_emoji" value="${g.emoji}" maxlength="4"></div>
+        <div class="form-group"><label>Descripción</label><input type="text" id="ef_desc" value="${g.description}"></div>
+      </div>
+      <div style="display:flex;gap:16px;flex-wrap:wrap;margin-top:12px">
+        <div class="toggle-switch" onclick="toggleField('ef_available')" id="ef_available_wrap">
+          <div class="toggle-track${g.available?' on':''}" id="ef_available_track"><div class="toggle-thumb"></div></div>
+          <span class="toggle-label">Disponible</span>
+        </div>
+        <div class="toggle-switch" onclick="toggleField('ef_vip')" id="ef_vip_wrap">
+          <div class="toggle-track${g.vip?' on':''}" id="ef_vip_track"><div class="toggle-thumb"></div></div>
+          <span class="toggle-label">Exclusivo VIP</span>
+        </div>
+      </div>
+      <div class="admin-form-actions">
+        <button class="btn-save" onclick="saveGameEdit(${idx})">💾 Guardar cambios</button>
+        <button class="btn-cancel" onclick="document.getElementById('gameFormContainer').innerHTML=''">Cancelar</button>
+      </div>
+    </div>`;
+}
+
+function toggleField(id){
+  const track=document.getElementById(id+'_track');
+  track.classList.toggle('on');
+}
+
+function saveGameEdit(idx){
+  GAMES[idx].title=document.getElementById('ef_title').value||GAMES[idx].title;
+  GAMES[idx].category=document.getElementById('ef_cat').value;
+  GAMES[idx].emoji=document.getElementById('ef_emoji').value||GAMES[idx].emoji;
+  GAMES[idx].description=document.getElementById('ef_desc').value||GAMES[idx].description;
+  GAMES[idx].available=document.getElementById('ef_available_track').classList.contains('on');
+  GAMES[idx].vip=document.getElementById('ef_vip_track').classList.contains('on');
+  document.getElementById('gameFormContainer').innerHTML='';
+  showToast(`${GAMES[idx].title} actualizado ✓`,'success');
+  refreshAdminData();
+  render();
+}
+
+function showAddGameForm(){
+  document.getElementById('gameFormContainer').innerHTML=`
+    <div class="admin-form">
+      <h3>➕ Agregar nuevo juego</h3>
+      <div class="admin-form-grid">
+        <div class="form-group"><label>Título *</label><input type="text" id="nf_title" placeholder="Nombre del juego"></div>
+        <div class="form-group"><label>Categoría</label>
+          <select id="nf_cat">${CATEGORIES.filter(c=>c!=='Todos').map(c=>`<option value="${c}">${c}</option>`).join('')}</select>
+        </div>
+        <div class="form-group"><label>Emoji</label><input type="text" id="nf_emoji" placeholder="🎮" maxlength="4"></div>
+        <div class="form-group"><label>Descripción</label><input type="text" id="nf_desc" placeholder="Descripción breve..."></div>
+      </div>
+      <div style="display:flex;gap:16px;flex-wrap:wrap;margin-top:12px">
+        <div class="toggle-switch" onclick="toggleField('nf_available')">
+          <div class="toggle-track on" id="nf_available_track"><div class="toggle-thumb"></div></div>
+          <span class="toggle-label">Disponible</span>
+        </div>
+        <div class="toggle-switch" onclick="toggleField('nf_vip')">
+          <div class="toggle-track" id="nf_vip_track"><div class="toggle-thumb"></div></div>
+          <span class="toggle-label">Exclusivo VIP</span>
+        </div>
+      </div>
+      <div class="admin-form-actions">
+        <button class="btn-save" onclick="saveNewGame()">✨ Crear juego</button>
+        <button class="btn-cancel" onclick="document.getElementById('gameFormContainer').innerHTML=''">Cancelar</button>
+      </div>
+    </div>`;
+}
+
+function saveNewGame(){
+  const title=document.getElementById('nf_title').value.trim();
+  if(!title){showToast('El título es obligatorio','admin-toast');return}
+  const newGame={
+    id:'game_'+Date.now(),
+    title,
+    category:document.getElementById('nf_cat').value,
+    emoji:document.getElementById('nf_emoji').value||'🎮',
+    description:document.getElementById('nf_desc').value||'Nuevo juego',
+    available:document.getElementById('nf_available_track').classList.contains('on'),
+    vip:document.getElementById('nf_vip_track').classList.contains('on'),
+    color:'g-space',thumb:'t-space',tags:[],
+    instructions:'Instrucciones próximamente.'
+  };
+  GAMES.push(newGame);
+  document.getElementById('gameFormContainer').innerHTML='';
+  showToast(`${newGame.title} agregado ✓`,'success');
+  refreshAdminData();
+  render();
+}
+
+/* ─── TOAST ─── */
+let toastTimer=null;
+function showToast(msg,type=''){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.className=type?type:'';
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+/* ─── INIT ─── */
+getUsers(); // ensure admin exists
+render();
+</script>
+</body>
+</html>
